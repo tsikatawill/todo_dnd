@@ -1,11 +1,11 @@
 import { Client as Styletron } from "styletron-engine-atomic";
 import { Provider as StyletronProvider } from "styletron-react";
-import { LightTheme, BaseProvider, styled } from "baseui";
+import { styled } from "baseui";
 import { Input } from "baseui/input";
-import { FormControl } from "baseui/form-control";
 import { Plus } from "baseui/icon";
 import { useState } from "react";
 import { List, arrayMove, arrayRemove } from "baseui/dnd-list";
+import { Notification, KIND } from "baseui/notification";
 
 const Centered = styled("div", {
   display: "flex",
@@ -18,6 +18,12 @@ const Centered = styled("div", {
   margin: "0 auto",
 });
 
+const ListWrapper = styled("div", {
+  height: "500px",
+  overflow: "auto",
+  margin: "1rem",
+});
+
 const Header = styled("header", {
   textAlign: "center",
   marginBottom: "1rem",
@@ -26,6 +32,8 @@ const Header = styled("header", {
 const App = () => {
   const [todo, setTodo] = useState("");
   const [todoList, setTodoList] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+
   const engine = new Styletron();
 
   const handleSubmit = (e) => {
@@ -33,6 +41,16 @@ const App = () => {
     if (todo.length > 0) {
       setTodoList([...todoList, todo]);
       setTodo("");
+      setNotifications([
+        ...notifications,
+        {
+          note: (
+            <Notification kind={KIND.positive} closeable>
+              Todo added successfully
+            </Notification>
+          ),
+        },
+      ]);
     }
   };
 
@@ -66,45 +84,49 @@ const App = () => {
               />
             </form>
             {todoList.length > 0 ? (
-              <List
-                removable
-                items={todoList}
-                overrides={{
-                  Root: {
-                    style: {
-                      maxWidth: "400px",
-                      marginTop: "20px",
+              <ListWrapper>
+                <List
+                  removable
+                  items={todoList}
+                  overrides={{
+                    Root: {
+                      style: {
+                        maxWidth: "400px",
+                        minWidth: "300px",
+                      },
                     },
-                  },
-                  List: {
-                    style: {
-                      background: "none",
+                    List: {
+                      style: {
+                        background: "none",
+                      },
                     },
-                  },
-                  Item: {
-                    style: {
-                      margin: "10px 0",
-                      background: "#0000009e",
-                      color: "white",
-                      borderRadius: "5px",
+                    Item: {
+                      style: {
+                        margin: "10px 0",
+                        background: "#0000009e",
+                        color: "white",
+                        borderRadius: "5px",
+                      },
                     },
-                  },
-                  CloseHandle: {
-                    style: {
-                      color: "red",
+                    CloseHandle: {
+                      style: {
+                        color: "red",
+                      },
                     },
-                  },
-                }}
-                onChange={({ oldIndex, newIndex }) =>
-                  setTodoList(
-                    newIndex === -1
-                      ? arrayRemove(todoList, oldIndex)
-                      : arrayMove(todoList, oldIndex, newIndex)
-                  )
-                }
-              />
+                  }}
+                  onChange={({ oldIndex, newIndex }) =>
+                    setTodoList(
+                      newIndex === -1
+                        ? arrayRemove(todoList, oldIndex)
+                        : arrayMove(todoList, oldIndex, newIndex)
+                    )
+                  }
+                />
+              </ListWrapper>
             ) : (
-              <p>Your list is looking a bit empty</p>
+              <ListWrapper>
+                <p>Your list is looking a bit empty</p>
+              </ListWrapper>
             )}
           </Centered>
         </main>
