@@ -5,7 +5,6 @@ import { Input } from "baseui/input";
 import { Plus } from "baseui/icon";
 import { useState } from "react";
 import { List, arrayMove, arrayRemove } from "baseui/dnd-list";
-import { Notification, KIND } from "baseui/notification";
 
 const Centered = styled("div", {
   display: "flex",
@@ -32,7 +31,6 @@ const Header = styled("header", {
 const App = () => {
   const [todo, setTodo] = useState("");
   const [todoList, setTodoList] = useState([]);
-  const [notifications, setNotifications] = useState([]);
 
   const engine = new Styletron();
 
@@ -41,16 +39,6 @@ const App = () => {
     if (todo.length > 0) {
       setTodoList([...todoList, todo]);
       setTodo("");
-      setNotifications([
-        ...notifications,
-        {
-          note: (
-            <Notification kind={KIND.positive} closeable>
-              Todo added successfully
-            </Notification>
-          ),
-        },
-      ]);
     }
   };
 
