@@ -3,7 +3,7 @@ import { Provider as StyletronProvider } from "styletron-react";
 import { styled } from "baseui";
 import { Input } from "baseui/input";
 import { Plus } from "baseui/icon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { List, arrayMove, arrayRemove } from "baseui/dnd-list";
 
 const Centered = styled("div", {
@@ -28,19 +28,30 @@ const Header = styled("header", {
   marginBottom: "1rem",
 });
 
+const getLocalTodos = () => {
+  let list = localStorage.getItem("dnd_todo_list");
+
+  if (list) return JSON.parse(list);
+  return [];
+};
+
 const App = () => {
-  const [todo, setTodo] = useState("");
-  const [todoList, setTodoList] = useState([]);
+  const [inputTodo, setInputTodo] = useState("");
+  const [todoList, setTodoList] = useState(getLocalTodos());
 
   const engine = new Styletron();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (todo.length > 0) {
-      setTodoList([...todoList, todo]);
-      setTodo("");
+    if (inputTodo.length > 0) {
+      setTodoList([...todoList, inputTodo]);
+      setInputTodo("");
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem("dnd_todo_list", JSON.stringify(todoList));
+  }, [todoList]);
 
   return (
     <StyletronProvider value={engine}>
@@ -53,7 +64,7 @@ const App = () => {
           <Centered>
             <form onSubmit={(e) => handleSubmit(e)}>
               <Input
-                value={todo}
+                value={inputTodo}
                 overrides={{
                   Root: {
                     style: {
@@ -68,7 +79,7 @@ const App = () => {
                     onClick={(e) => handleSubmit(e)}
                   />
                 }
-                onChange={(e) => setTodo(e.currentTarget.value)}
+                onChange={(e) => setInputTodo(e.currentTarget.value)}
               />
             </form>
             {todoList.length > 0 ? (
